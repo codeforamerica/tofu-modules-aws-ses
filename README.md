@@ -1,4 +1,4 @@
-# Code for America OpenTofu Module Template
+# AWS Simple Email Service (SES) Modules
 
 [![GitHub Release][badge-release]][latest-release]
 
@@ -24,7 +24,7 @@ to match your desired configuration. For example:
 
 ```hcl
 module "module_name" {
-  source = "github.com/codeforamerica/tofu-modules-template?ref=1.0.0"
+  source = "github.com/codeforamerica/tofu-modules-aws-ses?ref=1.0.0"
 
   project = "my-project"
   environment = "development"
@@ -68,7 +68,7 @@ tofu init -upgrade
 Follow the [contributing guidelines][contributing] to contribute to this
 repository.
 
-[badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-template?logo=github&label=Latest%20Release
+[badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-ses?logo=github&label=Latest%20Release
 [contributing]: CONTRIBUTING.md
-[latest-release]: https://github.com/codeforamerica/tofu-modules-template/releases/latest
+[latest-release]: https://github.com/codeforamerica/tofu-modules-aws-ses/releases/latest
 [tofu-modules]: https://github.com/codeforamerica/tofu-modules
