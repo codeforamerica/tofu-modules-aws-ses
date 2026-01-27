@@ -3,6 +3,12 @@ variable "domain" {
   description = "The domain to use for the SES email address."
 }
 
+variable "environment" {
+  type        = string
+  description = "Environment name (e.g. prod, staging), used in the SES send IAM policy name."
+  default     = "development"
+}
+
 variable "hosted_zone_id" {
   type        = string
   description = <<-EOT
@@ -10,6 +16,11 @@ variable "hosted_zone_id" {
     the domain will be used to find the hosted zone.
     EOT
   default     = null
+}
+
+variable "project" {
+  type        = string
+  description = "Project name, used in the SES send IAM policy name (format: project-environment-ses-send)."
 }
 
 variable "tags" {

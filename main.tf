@@ -11,3 +11,14 @@ module "this" {
 
   tags = var.tags
 }
+
+resource "aws_iam_policy" "this" {
+  name        = "${var.project}-${var.environment}-ses-send"
+  description = "Allows sending email via SES using the ${var.domain} domain."
+
+  policy = jsonencode(yamldecode(templatefile("${path.module}/templates/iam-policy.yaml.tpl", {
+    identity_arn = module.this.ses_domain_identity_arn
+  })))
+
+  tags = var.tags
+}
