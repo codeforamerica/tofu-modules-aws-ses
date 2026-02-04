@@ -4,4 +4,8 @@ Statement:
     Action:
       - ses:SendEmail
       - ses:SendRawEmail
-    Resource: "${identity_arn}"
+    Resource:
+      %{ for identity in identities ~}
+      - "${identity}"
+      %{ endfor }
+

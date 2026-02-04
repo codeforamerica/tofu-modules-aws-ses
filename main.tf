@@ -14,8 +14,8 @@ module "this" {
   tags = var.tags
 }
 
-resource "aws_ses_email_identity" "verified_recipients" {
-  for_each = toset(var.verified_recipients)
+resource "aws_ses_email_identity" "recipients" {
+  for_each = toset(var.allowed_recipients)
 
   email = each.value
 }
@@ -29,11 +29,14 @@ resource "aws_route53_record" "dmarc" {
 }
 
 resource "aws_iam_policy" "this" {
-  name        = "${var.project}-${var.environment}-ses-send"
+  name        = "${local.prefix}-ses-send"
   description = "Allows sending email via SES using the ${var.domain} domain."
 
   policy = jsonencode(yamldecode(templatefile("${path.module}/templates/iam-policy.yaml.tpl", {
-    identity_arn = module.this.ses_domain_identity_arn
+    identities = concat(
+      [module.this.ses_domain_identity_arn],
+      values(local.recipient_identities)
+    )
   })))
 
   tags = var.tags

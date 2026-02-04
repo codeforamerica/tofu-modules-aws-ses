@@ -8,6 +8,13 @@ output "iam_policy_arn" {
 }
 
 output "identity_arn" {
-  description = "ARN of the SES domain identity created by this module."
+  description = "ARN of the created SES domain identity."
   value       = module.this.ses_domain_identity_arn
+}
+
+output "recipient_identities" {
+  description = <<-EOT
+    ARNs of the SES email identities created for allowed recipients.
+    EOT
+  value       = local.recipient_identities
 }
