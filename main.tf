@@ -2,13 +2,14 @@ module "this" {
   source  = "cloudposse/ses/aws"
   version = ">= 0.25.1"
 
-  domain            = var.domain
-  ses_user_enabled  = false
-  ses_group_enabled = false
-  verify_domain     = true
-  verify_dkim       = true
-  create_spf_record = true
-  zone_id           = data.aws_route53_zone.domain.id
+  domain                = var.domain
+  ses_user_enabled      = false
+  ses_group_enabled     = false
+  verify_domain         = true
+  verify_dkim           = true
+  create_spf_record     = true
+  zone_id               = data.aws_route53_zone.domain.id
+  custom_from_subdomain = [var.from_subdomain]
 
   tags = var.tags
 }

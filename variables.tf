@@ -15,6 +15,12 @@ variable "environment" {
   default     = "development"
 }
 
+variable "from_subdomain" {
+  type        = string
+  description = "The subdomain used when sending email from the domain."
+  default     = "bounce"
+}
+
 variable "hosted_zone_id" {
   type        = string
   description = <<-EOT
