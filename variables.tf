@@ -40,3 +40,13 @@ variable "tags" {
   description = "Optional tags to be applied to all resources."
   default     = {}
 }
+
+variable "verified_recipients" {
+  type        = list(string)
+  description = <<-EOT
+    List of email addresses to create identities for, allowing them to receive
+    email from the domain. This is required in order for recipients to receive
+    email from the domain, prior to receiving production access.
+    EOT
+  default     = []
+}

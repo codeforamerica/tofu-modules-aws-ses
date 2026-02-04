@@ -14,6 +14,12 @@ module "this" {
   tags = var.tags
 }
 
+resource "aws_ses_email_identity" "verified_recipients" {
+  for_each = toset(var.verified_recipients)
+
+  email = each.value
+}
+
 resource "aws_route53_record" "dmarc" {
   name    = "_dmarc.${var.domain}"
   type    = "TXT"
