@@ -7,6 +7,7 @@ module "this" {
   ses_group_enabled = false
   verify_domain     = true
   verify_dkim       = true
+  create_spf_record = true
   zone_id           = data.aws_route53_zone.domain.id
 
   tags = var.tags
@@ -17,7 +18,7 @@ resource "aws_route53_record" "dmarc" {
   type    = "TXT"
   ttl     = 3600
   zone_id = data.aws_route53_zone.domain.id
-  records = ["v=DMARC1;p=quarantine;rua=mailto:${var.dmarc_rua_mailbox}@${var.domain};"]
+  records = ["v=DMARC1; p=quarantine; rua=mailto:${var.dmarc_rua_mailbox}@${var.domain};"]
 }
 
 resource "aws_iam_policy" "this" {
