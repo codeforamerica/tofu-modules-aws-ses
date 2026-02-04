@@ -12,6 +12,14 @@ module "this" {
   tags = var.tags
 }
 
+resource "aws_route53_record" "dmarc" {
+  name    = "_dmarc.${var.domain}"
+  type    = "TXT"
+  ttl     = 3600
+  zone_id = data.aws_route53_zone.domain.id
+  records = ["v=DMARC1;p=quarantine;rua=mailto:${var.dmarc_rua_mailbox}@${var.domain};"]
+}
+
 resource "aws_iam_policy" "this" {
   name        = "${var.project}-${var.environment}-ses-send"
   description = "Allows sending email via SES using the ${var.domain} domain."

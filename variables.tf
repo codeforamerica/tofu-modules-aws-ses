@@ -1,3 +1,9 @@
+variable "dmarc_rua_mailbox" {
+  type        = string
+  description = "The mailbox where DMARC RUA reports will be sent."
+  default     = "dmarc"
+}
+
 variable "domain" {
   type        = string
   description = "The domain to use for the SES email address."
