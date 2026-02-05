@@ -1,33 +1,53 @@
-# Code for America OpenTofu Module Template
+# AWS Simple Email Service (SES) Modules
 
 [![GitHub Release][badge-release]][latest-release]
 
-Use this template repository to create new OpenTofu modules. Follow the steps
-below to use this repository:
-
-1. Click the "Use this template" button to create a new repository
-1. Name your new repository using the format `todu-modules-<provider>-<module>`
-1. Add the files necessary to support your module to the root of your new
-   repository
-1. Update the `README.md` file with the appropriate information for your module.
-   Make sure you update any references to this template repository with your new
-   repository
-1. Update the [codeforamerica/tofu-modules][tofu-modules] repository to include
-   your new module in the main `README.md` and the documentation
+This modules configures configures a domain for Amazon [Simple Email
+Service][ses], optional email identities to support receiving mail from
+a sandbox account, and an IAM policy that allows sending mail using the created
+identities.
 
 ## Usage
 
 Add this module to your `main.tf` (or appropriate) file and configure the inputs
 to match your desired configuration. For example:
 
-[//]: # (TODO: Update to match your module's name and inputs)
+> [!TIP]
+> All new SES accounts are placed in sandbox mode, with several restrictions on
+> sending email. While in sandbox mode, you can only send email to other
+> verified identities.
+>
+> The easiest way to do this, is to use the `allowed_recipients` input to
+> specify a list of recipeints that should be authorized to recieve email from
+> the domain. A verification email will be sent to each address. The address
+> _must_ be verified before it can receive mail.
+>
+> Once your acccount has been approved for [production access][prod-access], you
+> no longer need this.
 
 ```hcl
-module "module_name" {
-  source = "github.com/codeforamerica/tofu-modules-template?ref=1.0.0"
+module "ses" {
+  source = "github.com/codeforamerica/tofu-modules-aws-ses?ref=1.0.0"
 
+  domain = "my-project.com"
   project = "my-project"
-  environment = "development"
+  allowed_recipients = ["me@example.com"]
+}
+```
+
+You can attach the create IAM policy to one or more IAM roles attached to
+resources, to allow those resources to send mail using the created identities.
+
+> [!NOTE]
+> You can also pass the policy ARN to another module that's responsible for
+> configuring your roles, such as our [aws_fargate_service] module.
+
+For example:
+
+```hcl
+resource "aws_iam_role_policy_attachment" "web_ses" {
+  role = aws_iam_role.web.name
+  policy_arn = module.ses.iam_policy_arn
 }
 ```
 
@@ -38,37 +58,34 @@ tofu init
 tofu plan
 ```
 
-To update the source for this module, pass `-upgrade` to `tofu init`:
-
-```bash
-tofu init -upgrade
-```
-
 ## Inputs
 
-[//]: # (TODO: Replace the following with your own inputs)
-
-| Name        | Description                                   | Type     | Default | Required |
-|-------------|-----------------------------------------------|----------|---------|----------|
-| project     | Name of the project.                          | `string` | n/a     | yes      |
-| environment | Environment for the project.                  | `string` | `"dev"` | no       |
-| tags        | Optional tags to be applied to all resources. | `list`   | `[]`    | no       |
+| Name               | Description                                                                                                                                                                                        | Type           | Default         | Required |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | --------------- | -------- |
+| domain             | The domain to register with SES.                                                                                                                                                                   | `string`       | n/a             | yes      |
+| project            | Project these resources are supporting. Used to prefix resource names.                                                                                                                             | `string`       | n/a             | yes      |
+| allowed_recipients | List of email addresses to create identities for, allowing them to receive email from the domain. This is required in order for recipients to receive email from the domain while in sandbox mode. | `list(string)` | `[]`            | no       |
+| dmarc_rua_mailbox  | The mailbox where DMARC RUA reports will be sent.                                                                                                                                                  | `string`       | `"dmarc"`       | no       |
+| environment        | Name of the deployment environment. Used to prefix resource names.                                                                                                                                 | `string`       | `"development"` | no       |
+| from_subdomain     | The subdomain used when sending email from the domain.                                                                                                                                             | `string`       | `"bounce"`      | no       |
+| tags               | Optional tags to be applied to all resources.                                                                                                                                                      | `list`         | `[]`            | no       |
 
 ## Outputs
 
-[//]: # (TODO: Replace the following with your own outputs)
-
-| Name     | Description                       | Type     |
-|----------|-----------------------------------|----------|
-| id       | Id of the newly created resource. | `string` |
-
+| Name                 | Description                                                                                                                                                                                   | Type          |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| iam_policy_arn       | ARN of the IAM policy that allows sending email via SES using the identity created by this module. Attach to an IAM role via `aws_iam_role_policy_attachment` to allow sending email via SES. | `string`      |
+| identity_arn         | ARN of the created SES domain identity.                                                                                                                                                       | `string`      |
+| recipient_identities | ARNs of the SES email identities created for allowed recipients.                                                                                                                              | `map(string)` |
 
 ## Contributing
 
 Follow the [contributing guidelines][contributing] to contribute to this
 repository.
 
-[badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-template?logo=github&label=Latest%20Release
+[aws_fargate_service]: https://github.com/codeforamerica/tofu-modules-aws-fargate-service
+[badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-ses?logo=github&label=Latest%20Release
 [contributing]: CONTRIBUTING.md
-[latest-release]: https://github.com/codeforamerica/tofu-modules-template/releases/latest
-[tofu-modules]: https://github.com/codeforamerica/tofu-modules
+[latest-release]: https://github.com/codeforamerica/tofu-modules-aws-ses/releases/latest
+[prod-access]: https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html
+[ses]: https://docs.aws.amazon.com/ses/latest/dg/Welcome.html
