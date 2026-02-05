@@ -29,8 +29,9 @@ to match your desired configuration. For example:
 module "ses" {
   source = "github.com/codeforamerica/tofu-modules-aws-ses?ref=1.0.0"
 
-  domain = "my-project.com"
-  project = "my-project"
+  project            = "my-project"
+  environment        = "production"
+  domain             = "my-project.com"
   allowed_recipients = ["me@example.com"]
 }
 ```
@@ -46,7 +47,7 @@ For example:
 
 ```hcl
 resource "aws_iam_role_policy_attachment" "web_ses" {
-  role = aws_iam_role.web.name
+  role       = aws_iam_role.web.name
   policy_arn = module.ses.iam_policy_arn
 }
 ```
