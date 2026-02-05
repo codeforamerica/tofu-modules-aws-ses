@@ -3,8 +3,9 @@
 [![GitHub Release][badge-release]][latest-release]
 
 This modules configures configures a domain for Amazon [Simple Email
-Service][ses], along with any email identities to support receiving mail from
-a sandbox account.
+Service][ses], optional email identities to support receiving mail from
+a sandbox account, and an IAM policy that allows sending mail using the created
+identities.
 
 ## Usage
 
@@ -25,12 +26,28 @@ to match your desired configuration. For example:
 > no longer need this.
 
 ```hcl
-module "module_name" {
+module "ses" {
   source = "github.com/codeforamerica/tofu-modules-aws-ses?ref=1.0.0"
 
   domain = "my-project.com"
   project = "my-project"
   allowed_recipients = ["me@example.com"]
+}
+```
+
+You can attach the create IAM policy to one or more IAM roles attached to
+resources, to allow those resources to send mail using the created identities.
+
+> [!NOTE]
+> You can also pass the policy ARN to another module that's responsible for
+> configuring your roles, such as our [aws_fargate_service] module.
+
+For example:
+
+```hcl
+resource "aws_iam_role_policy_attachment" "web_ses" {
+  role = aws_iam_role.web.name
+  policy_arn = module.ses.iam_policy_arn
 }
 ```
 
@@ -66,6 +83,7 @@ tofu plan
 Follow the [contributing guidelines][contributing] to contribute to this
 repository.
 
+[aws_fargate_service]: https://github.com/codeforamerica/tofu-modules-aws-fargate-service
 [badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-ses?logo=github&label=Latest%20Release
 [contributing]: CONTRIBUTING.md
 [latest-release]: https://github.com/codeforamerica/tofu-modules-aws-ses/releases/latest
