@@ -4,12 +4,12 @@ output "configuration_set_name" {
 }
 
 output "contact_list_name" {
-  description = "Name of the created SES contact list."
+  description = "Name of the created SES contact list, if created."
   value       = var.create_contact_list ? aws_sesv2_contact_list.this["this"].contact_list_name : null
 }
 
 output "contact_list_topics" {
-  description = "Topics created for the contact list."
+  description = "Topics created for the contact list, if created."
   value       = var.create_contact_list ? keys(var.contact_list_topics) : null
 }
 

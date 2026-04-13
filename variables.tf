@@ -93,7 +93,7 @@ variable "require_tls" {
   description = <<-EOT
     Whether to require TLS for email sent using the configuration set. If
     `true`, emails will be rejected if the receiving mail server does not
-    support a compatible TLS version. This _can_ result in recipients who are
+    support a compatible TLS version. This _may_ result in recipients who are
     using older mail systems being unable to receive email. When `false`, SES
     will still attempt to use TLS if it's available, but will fallback to an
     unencrypted connection if it's not.
