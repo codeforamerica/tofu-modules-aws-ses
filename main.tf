@@ -28,20 +28,6 @@ resource "aws_route53_record" "dmarc" {
   records = ["v=DMARC1; p=quarantine; rua=mailto:${var.dmarc_rua_mailbox}@${var.domain};"]
 }
 
-resource "aws_iam_policy" "this" {
-  name        = "${local.prefix}-ses-send"
-  description = "Allows sending email via SES using the ${var.domain} domain."
-
-  policy = jsonencode(yamldecode(templatefile("${path.module}/templates/iam-policy.yaml.tpl", {
-    identities = concat(
-      [module.this.ses_domain_identity_arn],
-      values(local.recipient_identities)
-    )
-  })))
-
-  tags = var.tags
-}
-
 resource "aws_sesv2_configuration_set" "this" {
   configuration_set_name = local.prefix
   tags                   = var.tags
@@ -100,4 +86,19 @@ resource "aws_sesv2_contact_list" "this" {
       default_subscription_status = topic.value.subscription_status
     }
   }
+}
+
+resource "aws_iam_policy" "this" {
+  name        = "${local.prefix}-ses-send"
+  description = "Allows sending email via SES using the ${var.domain} domain."
+
+  policy = jsonencode(yamldecode(templatefile("${path.module}/templates/iam-policy.yaml.tpl", {
+    identities = concat(
+      [module.this.ses_domain_identity_arn, aws_sesv2_configuration_set.this.arn],
+      values(local.recipient_identities),
+      var.create_contact_list ? [aws_sesv2_contact_list.this["this"].arn] : []
+    )
+  })))
+
+  tags = var.tags
 }
