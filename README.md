@@ -27,7 +27,7 @@ to match your desired configuration. For example:
 
 ```hcl
 module "ses" {
-  source = "github.com/codeforamerica/tofu-modules-aws-ses?ref=1.0.0"
+  source = "github.com/codeforamerica/tofu-modules-aws-ses?ref=1.1.0"
 
   project            = "my-project"
   environment        = "production"
