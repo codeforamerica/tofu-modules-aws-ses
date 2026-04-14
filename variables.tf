@@ -8,6 +8,34 @@ variable "allowed_recipients" {
   default     = []
 }
 
+variable "create_contact_list" {
+  type        = bool
+  description = <<-EOT
+    Whether to create a contact list to manage subscriptions for the domain.
+    EOT
+  default     = true
+}
+
+variable "contact_list_topics" {
+  type = map(object({
+    description         = optional(string, "")
+    display_name        = string
+    subscription_status = optional(string, "OPT_IN")
+  }))
+  description = <<-EOT
+    Topics to create for the contact list. At least one topic is required in
+    order to use Amazon's SES subscription management features. Only used if
+    `create_contact_list` is `true`.
+    EOT
+  default = {
+    general = {
+      description         = "General notifications"
+      display_name        = "General"
+      subscription_status = "OPT_IN"
+    }
+  }
+}
+
 variable "dmarc_rua_mailbox" {
   type        = string
   description = "The mailbox where DMARC RUA reports will be sent."
@@ -42,11 +70,35 @@ variable "hosted_zone_id" {
   default     = null
 }
 
+variable "max_delivery_duration" {
+  type        = number
+  description = <<-EOT
+    The maximum duration, in seconds, that SES will attempt to deliver an email.
+    If the email is not delivered within this time, it will be marked as failed.
+    You may want to adjust this based on the urgency of the emails you're
+    sending.
+    EOT
+  default     = 3600
+}
+
 variable "project" {
   type        = string
   description = <<-EOT
     Project these resources are supporting. Used to prefix resource names.
     EOT
+}
+
+variable "require_tls" {
+  type        = bool
+  description = <<-EOT
+    Whether to require TLS for email sent using the configuration set. If
+    `true`, emails will be rejected if the receiving mail server does not
+    support a compatible TLS version. This _may_ result in recipients who are
+    using older mail systems being unable to receive email. When `false`, SES
+    will still attempt to use TLS if it's available, but will fallback to an
+    unencrypted connection if it's not.
+    EOT
+  default     = false
 }
 
 variable "tags" {
