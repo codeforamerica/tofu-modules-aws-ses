@@ -56,8 +56,15 @@ resource "aws_sesv2_configuration_set_event_destination" "this" {
 
   event_destination {
     enabled = true
-    matching_event_types = ["BOUNCE", "COMPLAINT", "DELIVERY", "DELIVERY_DELAY",
-    "REJECT", "SEND", "SUBSCRIPTION"]
+    matching_event_types = [
+      "BOUNCE",
+      "COMPLAINT",
+      "DELIVERY",
+      "DELIVERY_DELAY",
+      "REJECT",
+      "SEND",
+      "SUBSCRIPTION"
+    ]
 
     cloud_watch_destination {
       dimension_configuration {
